@@ -10,6 +10,7 @@ seq_str = "PHPPPHPHPPPH"
 # ensure this only contians Ps and Hs!
 sequence = np.array(list(seq_str))
 
+# create a dir for images to be stored, directory PHPPPH or whatever
 if not os.path.exists(seq_str):
     os.mkdir(seq_str)
 
@@ -41,7 +42,7 @@ def check_good(move_list):
         points.append([x,y])
 
     # if we haven't returned, no self-intersections yet!
-    
+
     # still have to check compactness though
     pts_reached = np.where(grid==1)
     min_x = min(pts_reached[0])
@@ -59,11 +60,10 @@ def plot(move_list, energy_penalty=None, n=None, show=False):
     plt.cla()
     plt.clf()
     plt.axis('equal')
-    #plt.xlim(-10,10)
-    #plt.ylim(-10,10)
 
     gray = "#CACACA"
     red = "#C46B6B"
+    markersize= 40 if len(seq_str) == 6 else 20
 
     clist = [red if b == 0 else gray for b in binary_sequence]
     
@@ -71,16 +71,17 @@ def plot(move_list, energy_penalty=None, n=None, show=False):
     x = 0
     y = 0
     # color = green for the first dot, just for clarity
-    plt.plot([x], [y], color='g', marker='o')
+    plt.plot([x], [y], color=clist[0], marker='o', markersize=markersize, clip_on=False)
     for i, (dx, dy) in enumerate(move_list):
-        plt.plot([x,x+dx], [y,y+dy], 'k')
+        plt.plot([x,x+dx], [y,y+dy], 'gray', linewidth=5, zorder=-1, clip_on=False)
         x += dx
         y += dy
-        plt.plot([x], [y], color=clist[i+1], marker='o')
+        plt.plot([x], [y], color=clist[i+1], marker='o', markersize=markersize, clip_on=False)
     if energy_penalty is not None:
-        plt.title(f"$\\varepsilon={energy_penalty}$")
+        plt.title(f"$\\varepsilon={energy_penalty}$", fontsize=20)
 
-    plt.savefig(f'{seq_str}/plot{n}.png')
+    plt.axis('off')
+    plt.savefig(f'{seq_str}/plot{n}.png', bbox_inches='tight')
     if show:
         plt.show()
 
@@ -163,8 +164,8 @@ for i, pts in tqdm(enumerate(points_arr)):
     eps[i] = total_energy_penalty(pts, binary_sequence)
 
 for i in range(len(moves_arr)):
-    show = (eps[i] == min(eps))
-    plot(moves_arr[i], eps[i], i, show=show)
+    #show = (eps[i] == min(eps))
+    plot(moves_arr[i], eps[i], i)#, show=show)
 
 
 print("min energy penalty:", min(eps))
