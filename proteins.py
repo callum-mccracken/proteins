@@ -19,8 +19,8 @@ import os
 
 # put your favourite protein sequence here
 # make sure to only include Ps and Hs in the string
-#seq_str = "PHPPPHPHPPPH"
-seq_str = "PHPPPH"
+seq_str = "PHPPPHPHPPPH"
+#seq_str = "PHPPPH"
 
 ############# Initial Setup ###############
 
@@ -326,5 +326,5 @@ else:
 plt.cla()
 plt.clf()
 plt.hist(eps)
-plt.hist("Histogram of $\\varepsilon$ Values")
+plt.title("Histogram of $\\varepsilon$ Values")
 plt.savefig(f'{seq_str}/hist.png')
