@@ -121,10 +121,10 @@ def energy_penalty(type1, type2):
         # H--P has energy penalty 1
         return 1
     elif type1 == 1 and type2 == 0:
-        # P--H has energy penalty 1, but to avoid double-counting say it's 0
-        return 0
+        # P--H has energy penalty 1
+        return 1
     elif type1 == 1 and type2 == 1:
-        # P--P has energy penalty 0, but to avoid double-counting say it's 0
+        # P--P has energy penalty 0
         return 0
     else:
         raise ValueError("why are you here?")
@@ -132,30 +132,36 @@ def energy_penalty(type1, type2):
 
 def total_energy_penalty(points, types):
     # types[i] = 0 or 1, for H or P respectively
+    connections = []
     penalty = 0
     for i, point in enumerate(points):
-        point_x, point_y = point
-        if [point_x, point_y+1] in points:  # check up
-            j = points.index([point_x, point_y+1])
-            penalty += energy_penalty(types[i],types[j])
-        else:
-            penalty += 1 if types[i] == 0 else 0
-        if [point_x, point_y-1] in points: # down
-            j = points.index([point_x, point_y-1])
-            penalty += energy_penalty(types[i],types[j])
-        else:
-            penalty += 1 if types[i] == 0 else 0
-        if [point_x+1, point_y] in points: # right
-            j = points.index([point_x+1, point_y])
-            penalty += energy_penalty(types[i],types[j])
-        else:
-            penalty += 1 if types[i] == 0 else 0
-        if [point_x-1, point_y] in points: # left
-            j = points.index([point_x-1, point_y])
-            penalty += energy_penalty(types[i],types[j])
-        else:
-            penalty += 1 if types[i] == 0 else 0
-
+        if types[i] == 0:  # only consider H monomers
+            point_x, point_y = point
+            up = [point_x, point_y+1]
+            down = [point_x, point_y-1]
+            right = [point_x+1, point_y]
+            left = [point_x-1, point_y]
+            # look at adjacent molecules
+            for adj in [up, down, left, right]:
+                if adj in points:
+                    # there is a monomer adjacent to the point
+                    if [point, adj] not in connections:
+                        # and make sure it's not the previous or subsequent monomer:
+                        if i == 0:
+                            condition = adj != points[i+1]
+                        elif i == len(points)-1:
+                            condition = adj != points[i-1]
+                        else:
+                            condition = (adj != points[i-1]) and (adj != points[i+1])
+                        if condition:
+                            # if we haven't got this connection between point and adjacent
+                            j = points.index(adj)
+                            penalty += energy_penalty(types[i],types[j])
+                            connections.append([point, adj])
+                            connections.append([adj, point])
+                else:
+                    # connection between monomer and water
+                    penalty += 1 if types[i] == 0 else 0
     return penalty
 
 print("calculating energy penalties")
