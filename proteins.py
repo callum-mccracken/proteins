@@ -56,6 +56,34 @@ def check_good(move_list):
         return False, grid
     return True, points
 
+u = [0,1]
+d = [0,-1]
+r = [1, 0]
+l = [-1, 0]
+def turn_sequence(move_list):
+    turn_seq = ""
+    for i, move in enumerate(move_list[:-1]):
+        next_move = move_list[i+1]
+        if move == next_move:
+            turn_seq += "s"  # s for straight
+        elif move == u and next_move == r:  # turned right
+            turn_seq += "r"
+        elif move == u and next_move == l:  # turned left
+            turn_seq += "l"
+        elif move == d and next_move == r:
+            turn_seq += "l"
+        elif move == d and next_move == l:
+            turn_seq += "r"
+        elif move == r and next_move == u:
+            turn_seq += "l"
+        elif move == r and next_move == d:
+            turn_seq += "r"
+        elif move == l and next_move == u:
+            turn_seq += "r"
+        elif move == l and next_move == d:
+            turn_seq += "l"
+    return turn_seq
+
 def plot(move_list, energy_penalty=None, n=None, show=False):
     plt.cla()
     plt.clf()
@@ -92,6 +120,8 @@ n_moves = n_monomers-1
 print("finding all possible conformations")
 points_arr = []
 moves_arr = []
+
+unique_graphs = []
 for moves in tqdm([m for m in itertools.product(possible_moves, repeat=n_moves-1)]):
     # make sure the first move is [0,1] (up)
     moves = [[0,1]] + list(moves)
@@ -107,8 +137,14 @@ for moves in tqdm([m for m in itertools.product(possible_moves, repeat=n_moves-1
 
     is_good, points = check_good(moves)
     if is_good:  # if compact and no self-intersections
-        points_arr.append(points)
-        moves_arr.append(moves)
+        # get turn sequence:
+        turn_seq = turn_sequence(moves)
+        # check it's not already in the unique paths list:
+        if turn_seq not in unique_graphs:
+            points_arr.append(points)
+            moves_arr.append(moves)
+            unique_graphs.append(turn_seq)
+            unique_graphs.append(turn_seq[::-1])
 
 print("found", len(points_arr))
 
