@@ -294,8 +294,9 @@ for moves in tqdm([m for m in itertools.product(possible_moves, repeat=n_moves-1
     else:
         continue  # this ensures we have at least one turn
 
+    # check for exompact, no self-intersections
     is_good, points = check_good(moves)
-    if is_good:  # if compact and no self-intersections
+    if is_good:
         # get turn sequence
         turn_seq = turn_sequence(moves)
         # and check it's not already in the unique paths list:
@@ -314,7 +315,13 @@ for i, pts in tqdm(enumerate(points_arr)):
 for i in range(len(moves_arr)):
     plot(moves_arr[i], eps[i], i)
 print("min energy penalty:", min(eps))
-print("degeneracy:", len(np.where(eps==min(eps))[0]))
+
+degeneracy = len(np.where(eps==min(eps))[0])
+print("degeneracy:", degeneracy)
+if degeneracy == 1:
+    print("so this IS a protein-like sequence")
+else:
+    print("so this is NOT a protein-like sequence")
 
 plt.cla()
 plt.clf()
