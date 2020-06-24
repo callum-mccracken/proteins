@@ -3,11 +3,11 @@ proteins.py
 
 By Team 9 for the PHYS 380 Midterm, June 23, 2020.
 
-This is a python module for calculating the ground state of an
+This is a little module for calculating the ground state of an
 arbitrary polymer using the HP model.
 
 It's not super speedy, but it only needs to be able to
-calculate up to a 12-mer, so oh well.
+calculate up to a 12-mer
 """
 
 # some standard inputs
